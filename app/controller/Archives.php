@@ -23,7 +23,8 @@ class Archives extends \app\core\Controller {
             closedir($handler);
             rsort($snapshots);
 
-            return compact('snapshots');
+            $munin_link = \app\lib\Library::retrieve('munin_link');
+            return compact('snapshots', 'munin_link');
         }
 
         if ( !isset($request->query['snapshot']) ) {

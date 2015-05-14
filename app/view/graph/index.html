@@ -37,6 +37,7 @@
               <li><a href="./">Home</a></li>
               <li><a href="./archives">Archives</a></li>
               <li class='active'><a href="./graphs">Graphs</a></li>
+              <li><a href="<?php echo $munin_link; ?>" target="_blank">Munin</a></li>
               <li><a href="./help">Help</a></li>
             </ul>
           </div>
@@ -108,6 +109,8 @@
     </script>
 
     <script>
+
+    var response;
 
       function showGraph(){
 
@@ -181,7 +184,24 @@
                 "name": "Succeeded",
                 "color": "#468847",
                 "data": response.succeeded
-              }]
+              }],
+               plotOptions: {
+                    series: {
+                        cursor: 'pointer',
+                        point: {
+                            events: {
+                                click: function (e) {
+                                    document.location.href =
+                                        '?details=' + response.details[response.categories.indexOf(this.category)] +
+                                        '&type=' + this.series.name.toLowerCase();
+                                }
+                            }
+                        },
+                        marker: {
+                            lineWidth: 1
+                        }
+                    }
+               }
             };
 
             new Highcharts.Chart(chart);

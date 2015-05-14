@@ -217,8 +217,8 @@
                 <% } %>
                 <% if ( test.trace ) { %>
                 <li class='test-details'>
-                  <em>Stack Trace:</em>
-                  <pre><%= test.trace %></pre>
+                  <em style="cursor: pointer;" onclick="$(this).next().toggle();">Stack Trace &raquo;&raquo;</em>
+                  <pre style="display: none;"><%= test.trace %></pre>
                 </li>
                 <% } %>
               </ul>

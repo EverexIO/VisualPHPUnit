@@ -7,7 +7,19 @@ class Graph extends \app\core\Controller {
     // GET
     public function index($request) {
         if ( $request->is('get') ) {
-            return array();
+            if (
+                !empty($request->query['details']) &&
+                !empty($request->query['type'])
+            ) {
+                return $this->renderDetails(
+                    (int)$request->query['details'],
+                    $request->query['type']
+                );
+            }
+
+            return array(
+                'munin_link' => \app\lib\Library::retrieve('munin_link')
+            );
         }
 
         $table = "{$request->data['graph_type']}Result";
@@ -23,6 +35,7 @@ class Graph extends \app\core\Controller {
                 'succeeded'  => 0,
                 'skipped'    => 0,
                 'incomplete' => 0,
+                'details'    => 0
             );
         }
 
@@ -62,7 +75,8 @@ class Graph extends \app\core\Controller {
             'failed'     => array(),
             'incomplete' => array(),
             'skipped'    => array(),
-            'succeeded'  => array()
+            'succeeded'  => array(),
+            'details'    => array(),
         );
         while ( $current < $end ) {
             $categories[] = date($output, $current);
@@ -75,8 +89,13 @@ class Graph extends \app\core\Controller {
                 'succeeded'  => 0
             );
 
-            $sql = "select failed, incomplete, skipped, succeeded "
-                . "from {$table} where run_date >= ? and run_date < ?";
+            $sql =
+            //    "SELECT `failed`, `incomplete`, `skipped`, `succeeded`, `details` " .
+                "SELECT `failed`, `incomplete`, `skipped`, `succeeded`, `id_details` " .
+                "FROM {$table} `t` " .
+            //    "LEFT OUTER JOIN `details` `d` " .
+            //    "ON `d`.`id` = `t`.`details` " .
+                "WHERE `t`.`run_date` >= ? AND `t`.`run_date` < ?";
             $params = array(
                 date($sql_format, $current),
                 date($sql_format, $next)
@@ -87,11 +106,17 @@ class Graph extends \app\core\Controller {
             $num_rows = count($results);
 
             if ( $num_rows > 0 ) {
-                foreach ( $results as $result ) {
+                foreach ( $results as $notFirst => $result ) {
                     foreach ( $result as $key => $value ) {
-                        $data[$key] += $value;
+                        if ('id_details' != $key) {
+                            $data[$key] += $value;
+                        } elseif(!$notFirst) {
+                            $plot_values['details'][] = $value;
+                        }
                     }
                 }
+            } else {
+                $plot_values['details'][] = 0;
             }
 
             foreach ( $data as $key => $val ) {
@@ -114,10 +139,21 @@ class Graph extends \app\core\Controller {
             'failed'     => $plot_values['failed'],
             'succeeded'  => $plot_values['succeeded'],
             'skipped'    => $plot_values['skipped'],
-            'incomplete' => $plot_values['incomplete']
+            'incomplete' => $plot_values['incomplete'],
+            'details'    => $plot_values['details'],
         );
     }
 
-}
+    /**
+     * Renders details page.
+     *
+     * @param  int    $detailsId
+     * @param  string $type
+     * @return string
+     */
+    protected function renderDetails($detailsId, $type){
+        $result = $this->render_html('graph/details', array());
 
-?>
+        return $result;
+    }
+}

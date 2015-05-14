@@ -33,7 +33,9 @@ class Home extends \app\core\Controller {
 
     // GET
     public function help($request) {
-        return array();
+        return array(
+            'munin_link' => \app\lib\Library::retrieve('munin_link')
+        );
     }
 
     // GET/POST
