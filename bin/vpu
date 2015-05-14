@@ -2,11 +2,15 @@
 <?php
     require dirname(__DIR__) . '/app/config/bootstrap.php';
 
+    use \app\lib\PDO_MySQL;
+
     $opts  = array(
         'f:'  => 'xml_configuration_file:',
         'd::' => 'snapshot_directory::',
         'e::' => 'sandbox_errors::',
-        's::' => 'store_statistics::'
+        's::' => 'store_statistics::',
+        't::' => 'time::',
+        'p::' => 'project::'
     );
     $options = getopt(implode(array_keys($opts)), array_values($opts));
 
@@ -48,6 +52,15 @@
     $errors = $vpu->get_errors();
     $to_view = compact('suites', 'stats', 'errors');
 
+    $time = time();
+    if ( isset($options['t']) ) {
+        $time = (int)$options['t'];
+    }
+
+    $project = '';
+    if ( isset($options['p']) ) {
+        $project = $options['p'] . '_';
+    }
     if ( isset($options['d']) ) {
         $filename = $options['d'];
         $snapshot_error = '[-d]';
@@ -58,7 +71,7 @@
         $filename = \app\lib\Library::retrieve('snapshot_directory');
         $snapshot_error = 'the snapshot_directory in app/config/bootstrap.php';
     }
-    $filename = realpath($filename) . '/' . date('Y-m-d_H-i') . '.html';
+    $filename = realpath($filename) . '/' . $project . date('Y-m-d_H-i', $time) . '.html';
 
     $handle = @fopen($filename, 'a');
     if ( !$handle ) {
@@ -94,7 +107,7 @@
         );
     }
 
-    $now = date('Y-m-d H:i:s');
+    $now = date('Y-m-d H:i:s', $time);
     foreach ( $stats as $key => $stat ) {
         $data = array(
             'run_date'   => $now,
@@ -104,14 +117,21 @@
             'succeeded'  => $stat['succeeded']
         );
         $table = ucfirst(rtrim($key, 's')) . 'Result';
+        @mysql_connect('localhost', 'root', 'zaberiosla');
+        @mysql_select_db('vpu');
+        $r = @mysql_query('select 1 from ' . $table . ' where run_date="'.$now.'"');
+        if(@mysql_num_rows($r)){
+            @mysql_query("UPDATE $table SET failed = failed + {$data['failed']}, succeeded = succeeded + {$data['succeeded']} where run_date='$now'");
+        }else{
+
         if ( !$db->insert($table, $data) ) {
             die(
                 "There was an error inserting a record into the database:\n"
                 . implode(' ', $db->get_errors()) . "\n"
             );
         }
+        }
     }
-
     echo "The statistics generated during this test run were successfully "
         . "stored.\n";
 ?>
