@@ -54,6 +54,7 @@ class Home extends \app\core\Controller {
             $xml_configuration_files = \app\lib\Library::retrieve(
                 'xml_configuration_files'
             );
+            $munin_link = \app\lib\Library::retrieve('munin_link');
             return compact(
                 'create_snapshots',
                 'sandbox_errors',
@@ -61,7 +62,8 @@ class Home extends \app\core\Controller {
                 'store_statistics',
                 'suites',
                 'test_directories',
-                'xml_configuration_files'
+                'xml_configuration_files',
+                'munin_link'
             );
         }
 

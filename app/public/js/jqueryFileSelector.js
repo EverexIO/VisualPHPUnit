@@ -45,6 +45,9 @@
             }
 
             bindTree($ul);
+            $ul.find('li.directory a').each(function (){
+                $(this).trigger('click');
+            });
           });
         }
 
