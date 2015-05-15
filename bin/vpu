@@ -108,30 +108,103 @@
     }
 
     $now = date('Y-m-d H:i:s', $time);
+    $dbParams = \app\lib\Library::retrieve('db');
+    $dbLink = @mysql_connect($dbParams['host'], $dbParams['username'], $dbParams['password']);
+    mysql_select_db($dbParams['database']);
+
     foreach ( $stats as $key => $stat ) {
+        $sql =
+            "SELECT `id`, `details` ".
+            "FROM `details` " .
+            "WHERE " .
+                "`run_date` = '" . date('Y-m-d') . "' AND " .
+                "`type` = '" . $key . "'";
+        ($r = mysql_query($sql)) or die(print_r(mysql_error($dbLink), TRUE));
+        if(mysql_num_rows($r)){
+            list($detailsId, $details) = mysql_fetch_row($r);
+            $details = unserialize($details);
+        }else{
+            $detailsId = 0;
+            $details = array(
+                'succeeded'         => 0,
+                'skipped'           => 0,
+                'incomplete'        => 0,
+                'failed'            => 0,
+                'total'             => 0,
+                'percentSucceeded'  => 0,
+                'percentSkipped'    => 0,
+                'percentIncomplete' => 0,
+                'percentFailed'     => 0,
+                'data'              => array()
+            );
+        }
+        foreach($stat as $statKey => $value){
+            $details[$statKey] += $value;
+        }
+        foreach($results['suites'] as $testName => $aTests){
+            foreach($aTests['tests'] as $aTest){
+                if('succeeded' == $aTest['status']){
+                    continue;
+                }
+                if(!isset($details['data'][$testName])){
+                    $details['data'][$testName] = array();
+                }
+                $details['data'][$testName][] = $aTest;
+            }
+        }
+        if($detailsId){
+            $sql =
+                "UPDATE `details` " .
+                "SET `details` = '" .
+                mysql_real_escape_string(
+                    serialize($details),
+                    $dbLink
+                ) . "' " .
+                "WHERE `id` = {$detailsId}";
+        }else{
+            $sql =
+                "INSERT INTO `details` " .
+                "SET " .
+                    "`run_date` = '" . date('Y-m-d') . "', " .
+                    "`type` = '{$key}', " .
+                    "`details` = '" .
+                    mysql_real_escape_string(
+                        serialize($details),
+                        $dbLink
+                    ) . "'";
+        }
+        mysql_query($sql) or die(print_r(mysql_error($dbLink), TRUE));
+        if(!$detailsId){
+            $detailsId = mysql_insert_id();
+        }
+        $table = ucfirst(rtrim($key, 's')) . 'Result';
         $data = array(
             'run_date'   => $now,
             'failed'     => $stat['failed'],
             'incomplete' => $stat['incomplete'],
             'skipped'    => $stat['skipped'],
-            'succeeded'  => $stat['succeeded']
+            'succeeded'  => $stat['succeeded'],
+            'id_details' => $detailsId,
         );
-        $table = ucfirst(rtrim($key, 's')) . 'Result';
-        @mysql_connect('localhost', 'root', 'zaberiosla');
-        @mysql_select_db('vpu');
-        $r = @mysql_query('select 1 from ' . $table . ' where run_date="'.$now.'"');
-        if(@mysql_num_rows($r)){
-            @mysql_query("UPDATE $table SET failed = failed + {$data['failed']}, succeeded = succeeded + {$data['succeeded']} where run_date='$now'");
+        ($r = mysql_query('select 1 from ' . $table . ' where run_date="'.$now.'"')) or
+        die(print_r(mysql_error($dbLink), TRUE));
+        if(mysql_num_rows($r)){
+            mysql_query(
+                "UPDATE `" . $table . "` " .
+                "SET " .
+                    "`failed` = `failed` + {$data['failed']}, " .
+                    "`succeeded` = succeeded + {$data['succeeded']}, " .
+                    "`id_details` = {$detailsId} " .
+                    "WHERE `run_date` = '$now'"
+            ) or die(print_r(mysql_error($dbLink), TRUE));
         }else{
-
-        if ( !$db->insert($table, $data) ) {
-            die(
-                "There was an error inserting a record into the database:\n"
-                . implode(' ', $db->get_errors()) . "\n"
-            );
-        }
+            if(!$db->insert($table, $data)){
+                die(
+                    "There was an error inserting a record into the database:\n"
+                    . implode(' ', $db->get_errors()) . "\n"
+                );
+            }
         }
     }
     echo "The statistics generated during this test run were successfully "
         . "stored.\n";
-?>

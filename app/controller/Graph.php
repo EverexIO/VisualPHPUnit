@@ -2,6 +2,9 @@
 
 namespace app\controller;
 
+
+use \PDO;
+
 class Graph extends \app\core\Controller {
 
     // GET
@@ -13,7 +16,8 @@ class Graph extends \app\core\Controller {
             ) {
                 return $this->renderDetails(
                     (int)$request->query['details'],
-                    $request->query['type']
+                    $request->query['type'],
+                    $request->query['source']
                 );
             }
 
@@ -151,8 +155,43 @@ class Graph extends \app\core\Controller {
      * @param  string $type
      * @return string
      */
-    protected function renderDetails($detailsId, $type){
-        $result = $this->render_html('graph/details', array());
+    protected function renderDetails($detailsId, $type, $source){
+        $scope = array();
+
+        $dbOptions = \app\lib\Library::retrieve('db');
+        /**
+         * @var \app\lib\MySQL
+         */
+        $db = new $dbOptions['plugin'];
+        if(!$db->connect($dbOptions)){
+            die(
+                "There was an error connecting to the database:\n"
+                . implode(' ', $db->get_errors()) . "\n"
+            );
+        }
+        $sql =
+            "SELECT `run_date`, `details` ".
+            "FROM `details` " .
+            "WHERE " .
+                "`id` = ? AND " .
+                "`type` = ? ";
+        $db->query($sql, array($detailsId, $type));
+        // print_r($db->get_errors());###
+        $res = $db->fetch(PDO::FETCH_ASSOC);
+        // var_dump($res);die;###
+
+        if($res){
+            $details = $res['details'];
+            $details = unserialize($details);
+            // print_r($details);die;###
+            $scope = array(
+                'type'     => ucfirst($type),
+                'run_date' => $res['run_date'],
+                'source'   => $source,
+            ) + $details;
+        }
+
+        $result = $this->render_html('graph/details', $scope);
 
         return $result;
     }

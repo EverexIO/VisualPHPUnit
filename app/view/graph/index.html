@@ -191,9 +191,17 @@
                         point: {
                             events: {
                                 click: function (e) {
-                                    document.location.href =
-                                        '?details=' + response.details[response.categories.indexOf(this.category)] +
-                                        '&type=' + this.series.name.toLowerCase();
+                                    var source = this.series.name.toLowerCase();
+
+                                    if('succeeded' != source){
+                                        document.location.href =
+                                            '?details=' +
+                                            response.details[
+                                                response.categories.indexOf(this.category)
+                                            ] +
+                                            '&type=' + response.type.toLowerCase() + 's' +
+                                            '&source=' + source;
+                                    }
                                 }
                             }
                         },

@@ -80,7 +80,8 @@ class VPU {
                 continue;
             }
 
-            $suite_name = $this->_classname_only($result['suite']);
+            // $suite_name = $this->_classname_only($result['suite']);
+            $suite_name = $result['suite'];
 
             if ( !isset($collection[$suite_name]) ) {
                 $collection[$suite_name] = array(
@@ -499,9 +500,7 @@ class VPU {
 
         $start = strpos($results, '{');
         $end = strrpos($results, '}');
+        // file_put_contents('d:/qqq.log', $results);###
         return substr($results, $start, $end - $start + 1);
     }
-
 }
-
-?>

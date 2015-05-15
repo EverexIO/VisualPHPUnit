@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
+<head>
     <meta charset="utf-8">
     <title>VisualPHPUnit - Graphs</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -14,14 +14,30 @@
     </style>
     <link href="./css/bootstrap-responsive.css" rel="stylesheet">
     <link href='//ajax.googleapis.com/ajax/libs/jqueryui/1.8.19/themes/redmond/jquery-ui.css' rel='stylesheet'>
+    <script src='//ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js'></script>
 
     <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
     <!--[if lt IE 9]>
       <script src="//html5shim.googlecode.com/svn/trunk/html5.js"></script>
     <![endif]-->
-  </head>
+</head>
 
-  <body>
+<body>
+
+<script type="text/javascript">
+function toggleBySource(source){
+    $('.alert-' + source).each(function(){
+        $(this).toggle();
+    });
+}
+var sources = ['failed', 'skipped', 'incomplete'];
+for(var i in sources){
+    var source = sources[i];
+    if('<?php echo $source;?>' != source){
+        toggleBySource(source);
+    }
+}
+</script>
 
     <div class="navbar navbar-fixed-top">
       <div class="navbar-inner">
@@ -46,7 +62,77 @@
     </div>
 
     <div class="container">
-	LATER
+	    <h1><?php echo $type;?> stats for <?php echo $run_date;?></h1>
+        <!--div>
+            <span style="color: #468847;">Succeeded: <?php echo $succeeded;?> (<?php echo $percentSucceeded;?>%)</span>,
+            <span style="color: #3a87ad;">Skipped: <?php echo $skipped;?> (<?php echo $percentSkipped;?>%)</span>,
+            <span style="color: #f89406;">Incomplete: <?php echo $incomplete;?> (<?php echo $percentIncomplete;?>%)</span>,
+            <span style="color: #b94a48;">Failed: <?php echo $failed;?> (<?php echo $percentFailed;?>%)</span>,
+            Total: <?php echo $total;?>
+        </div-->
+
+        <div class='row statistics'>
+            <div class='span4'>
+                <h4>Failed (<?=$failed;?>/<?=$total;?>) <span onclick="javascript: toggleBySource('failed');" style="cursor: pointer;" title="Show / hide">&raquo;</span></h4>
+                <div class="progress progress-danger">
+                  <div class="bar" style="width: <?=$percentFailed;?>%"></div>
+                </div>
+
+                <h4>Incomplete (<?=$incomplete;?>/<?=$total;?>) <span onclick="javascript: toggleBySource('incomplete');" style="cursor: pointer;" title="Show / hide">&raquo;</span></h4>
+                <div class="progress progress-warning">
+                  <div class="bar" style="width: <?=$percentIncomplete;?>%"></div>
+                </div>
+
+                <h4>Skipped (<?=$skipped;?>/<?=$total;?>) <span onclick="javascript: toggleBySource('skipped');" style="cursor: pointer;" title="Show / hide">&raquo;</span></h4>
+                <div class="progress progress-info">
+                  <div class="bar" style="width: <?=$percentSkipped;?>%"></div>
+                </div>
+
+                <h4>Succeeded (<?=$succeeded;?>/<?=$total;?>)</h4>
+                <div class="progress progress-success">
+                  <div class="bar" style="width: <?=$percentSucceeded;?>%"></div>
+                </div>
+            </div>
+        </div>
+
+<?php
+foreach($data as $suiteName => $tests) {
+?>
+        <h3><?php echo $suiteName;?></h3>
+<?php
+    foreach($tests as $test){
+?>
+            <div class="alert alert-block alert-<?=$test['status'];?>">
+                <h4 class="alert-heading"><?=$test['name'];?> (<?php echo $suiteName;?>)</h4>
+                <?php if ( $test['message']): ?>
+                <p class='test-message'>
+                    <strong><?=$test['message'];?></strong>
+                </p>
+                <?php endif; ?>
+                <ul class='nav'>
+                    <li class='test-details'>
+                    <em>Execution time:</em>
+                    <?=$test['time'];?>s
+                    </li>
+                    <?php if ( $test['output']): ?>
+                    <li class='test-details'>
+                        <em>Debug Output:</em>
+                        <pre><?=$test['output'];?></pre>
+                    </li>
+                    <?php endif; ?>
+                    <?php if ( $test['trace']): ?>
+                    <li class='test-details'>
+                        <em style="cursor: pointer;" onclick="$(this).next().toggle();">Stack Trace &raquo;&raquo;</em>
+                        <pre style="display: none;"><?=$test['trace'];?></pre>
+                    </li>
+                    <?php endif; ?>
+                </ul>
+            </div>
+<?php
+    }
+} // foreach($data as $suiteName => $suite)
+?>
+        </div>
     </div>
 
   </body>

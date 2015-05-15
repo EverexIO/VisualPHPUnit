@@ -113,13 +113,13 @@ class Home extends \app\core\Controller {
             $notifications[] = $this->_create_snapshot($to_view);
         }
         if ( $request->data['store_statistics'] ) {
-            $notifications[] = $this->_store_statistics($stats);
+            $notifications[] = $this->_store_statistics($stats, $results);
         }
 
         return $to_view + compact('notifications');
     }
 
-    protected function _store_statistics($stats) {
+    protected function _store_statistics($stats, $results) {
         $db_options = \app\lib\Library::retrieve('db');
         $db = new $db_options['plugin']();
         if ( !$db->connect($db_options) ) {
@@ -129,15 +129,82 @@ class Home extends \app\core\Controller {
                 'message' => implode(' ', $db->get_errors())
             );
         }
+        $dbLink = @mysql_connect($db_options['host'], $db_options['username'], $db_options['password']);
+        mysql_select_db($db_options['database']);
 
-        $now = date('Y-m-d H:i:s');
+        $time = time();
+        $now = date('Y-m-d H:i:s', $time);
         foreach ( $stats as $key => $stat ) {
+            $sql =
+                "SELECT `id`, `details` ".
+                "FROM `details` " .
+                "WHERE " .
+                    "`run_date` = '" . date('Y-m-d') . "' AND " .
+                    "`type` = '" . $key . "'";
+            ($r = @mysql_query($sql)) or die(print_r(mysql_error(), TRUE));
+            if(mysql_num_rows($r)){
+                list($detailsId, $details) = mysql_fetch_row($r);
+                $details = unserialize($details);
+            }else{
+                $detailsId = 0;
+                $details = array(
+                    'succeeded'         => 0,
+                    'skipped'           => 0,
+                    'incomplete'        => 0,
+                    'failed'            => 0,
+                    'total'             => 0,
+                    'percentSucceeded'  => 0,
+                    'percentSkipped'    => 0,
+                    'percentIncomplete' => 0,
+                    'percentFailed'     => 0,
+                    'data'              => array()
+                );
+            }
+            foreach($stat as $statKey => $value){
+                $details[$statKey] += $value;
+            }
+            foreach($results['suites'] as $testName => $aTests){
+                foreach($aTests['tests'] as $aTest){
+                    if('succeeded' == $aTest['status']){
+                        continue;
+                    }
+                    if(!isset($details['data'][$testName])){
+                        $details['data'][$testName] = array();
+                    }
+                    $details['data'][$testName][] = $aTest;
+                }
+            }
+            if($detailsId){
+                $sql =
+                    "UPDATE `details` " .
+                    "SET `details` = '" .
+                    mysql_real_escape_string(
+                        serialize($details)
+                    ) . "' " .
+                    "WHERE `id` = {$detailsId}";
+            }else{
+                $sql =
+                    "INSERT INTO `details` " .
+                    "SET " .
+                        "`run_date` = '" . date('Y-m-d') . "', " .
+                        "`type` = '{$key}', " .
+                        "`details` = '" .
+                        mysql_real_escape_string(
+                            serialize($details)
+                        ) . "'";
+            }
+            mysql_query($sql) or die(print_r(mysql_error(), TRUE));
+            if(!$detailsId){
+                $detailsId = mysql_insert_id();
+            }
+
             $data = array(
                 'run_date'   => $now,
                 'failed'     => $stat['failed'],
                 'incomplete' => $stat['incomplete'],
                 'skipped'    => $stat['skipped'],
-                'succeeded'  => $stat['succeeded']
+                'succeeded'  => $stat['succeeded'],
+                'id_details' => $detailsId,
             );
             $table = ucfirst(rtrim($key, 's')) . 'Result';
             if ( !$db->insert($table, $data) ) {

@@ -196,39 +196,7 @@
             <span class="label label-<%= suite.status %>"><%= statusCap %></span>
           </div>
 
-          <% _.each(suite.tests, function(test) { %>
-            <div class="alert alert-block alert-<%= test.status %>">
-              <h4 class="alert-heading"><%= test.name %></h4>
-              <% if ( test.message) { %>
-              <p class='test-message'>
-                <strong><%= test.message %></strong>
-              </p>
-              <% } %>
-              <ul class='nav'>
-                <li class='test-details'>
-                  <em>Execution time:</em>
-                  <%= test.time %>s
-                </li>
-                <% if ( test.output ) { %>
-                <li class='test-details'>
-                  <em>Debug Output:</em>
-                  <pre><%= test.output %></pre>
-                </li>
-                <% } %>
-                <% if ( test.trace ) { %>
-                <li class='test-details'>
-                  <em style="cursor: pointer;" onclick="$(this).next().toggle();">Stack Trace &raquo;&raquo;</em>
-                  <pre style="display: none;"><%= test.trace %></pre>
-                </li>
-                <% } %>
-              </ul>
-            </div>
-          <% }) %>
-        </div>
-
-      <% }) %>
-
-      <% if ( !_.isEmpty(stats) ) { %>
+<% if ( !_.isEmpty(stats) ) { %>
         <div class='row statistics'>
             <div class='span4'>
             <h3>Suite Statistics</h3>
@@ -279,6 +247,38 @@
             </div>
         </div>
       <% } %>
+
+          <% _.each(suite.tests, function(test) { %>
+            <div class="alert alert-block alert-<%= test.status %>">
+              <h4 class="alert-heading"><%= test.name %></h4>
+              <% if ( test.message) { %>
+              <p class='test-message'>
+                <strong><%= test.message %></strong>
+              </p>
+              <% } %>
+              <ul class='nav'>
+                <li class='test-details'>
+                  <em>Execution time:</em>
+                  <%= test.time %>s
+                </li>
+                <% if ( test.output ) { %>
+                <li class='test-details'>
+                  <em>Debug Output:</em>
+                  <pre><%= test.output %></pre>
+                </li>
+                <% } %>
+                <% if ( test.trace ) { %>
+                <li class='test-details'>
+                  <em style="cursor: pointer;" onclick="$(this).next().toggle();">Stack Trace &raquo;&raquo;</em>
+                  <pre style="display: none;"><%= test.trace %></pre>
+                </li>
+                <% } %>
+              </ul>
+            </div>
+          <% }) %>
+        </div>
+
+      <% }) %>
 
       <% if ( errors.length ) { %>
         <h3>Errors</h3>
