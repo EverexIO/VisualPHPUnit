@@ -193,7 +193,7 @@
                                 click: function (e) {
                                     var source = this.series.name.toLowerCase();
 
-                                    if('succeeded' != source){
+                                    // if('succeeded' != source){
                                         document.location.href =
                                             '?details=' +
                                             response.details[
@@ -201,7 +201,7 @@
                                             ] +
                                             '&type=' + response.type.toLowerCase() + 's' +
                                             '&source=' + source;
-                                    }
+                                    // }
                                 }
                             }
                         },
