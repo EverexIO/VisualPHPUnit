@@ -165,9 +165,11 @@ class Home extends \app\core\Controller {
             }
             foreach($results['suites'] as $testName => $aTests){
                 foreach($aTests['tests'] as $aTest){
+                    /*
                     if('succeeded' == $aTest['status']){
                         continue;
                     }
+                    */
                     if(!isset($details['data'][$testName])){
                         $details['data'][$testName] = array();
                     }

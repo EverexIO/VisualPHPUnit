@@ -88,7 +88,7 @@ for(var i in sources){
                   <div class="bar" style="width: <?=$percentSkipped;?>%"></div>
                 </div>
 
-                <h4>Succeeded (<?=$succeeded;?>/<?=$total;?>)</h4>
+                <h4>Succeeded (<?=$succeeded;?>/<?=$total;?>) <span onclick="javascript: toggleBySource('succeeded');" style="cursor: pointer;" title="Show / hide">&raquo;</span></h4>
                 <div class="progress progress-success">
                   <div class="bar" style="width: <?=$percentSucceeded;?>%"></div>
                 </div>
