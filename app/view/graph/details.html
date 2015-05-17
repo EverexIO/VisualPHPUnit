@@ -95,6 +95,12 @@ foreach($data as $suiteName => $tests) {
                 </p>
                 <?php endif; ?>
                 <ul class='nav'>
+                    <?php if(isset($test['run_time'])) { ?>
+                    <li class='test-details'>
+                    <em>Run time:</em>
+                    <?=$test['run_time'];?>s
+                    </li>
+                    <?php } ?>
                     <li class='test-details'>
                     <em>Execution time:</em>
                     <?=$test['time'];?>s

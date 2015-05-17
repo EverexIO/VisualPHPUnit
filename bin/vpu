@@ -112,6 +112,7 @@
     $dbLink = @mysql_connect($dbParams['host'], $dbParams['username'], $dbParams['password']);
     mysql_select_db($dbParams['database']);
 
+    // print_r($results);die;###
     foreach ( $stats as $key => $stat ) {
         $sql =
             "SELECT `id`, `details` ".
@@ -148,6 +149,7 @@
                     continue;
                 }
                 */
+                $aTest['run_time'] = $now;
                 if(!isset($details['data'][$testName])){
                     $details['data'][$testName] = array();
                 }

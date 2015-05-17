@@ -170,6 +170,7 @@ class Home extends \app\core\Controller {
                         continue;
                     }
                     */
+                    $aTest['run_time'] = $now;
                     if(!isset($details['data'][$testName])){
                         $details['data'][$testName] = array();
                     }
