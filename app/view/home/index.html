@@ -225,22 +225,22 @@
             <div class='span4 offset1'>
             <h3>Test Statistics</h3>
 
-            <h4>Failed (<%= stats.tests.failed %>/<%= stats.tests.total %>)</h4>
+            <h4>Failed (<%= stats.tests.failed %>/<%= stats.tests.total %>) <span onclick="javascript: toggleBySource('failed');" style="cursor: pointer;" title="Show / hide">&raquo;</span></h4>
             <div class="progress progress-danger">
                 <div class="bar" style="width: <%= stats.tests.percentFailed %>%"></div>
             </div>
 
-            <h4>Incomplete (<%= stats.tests.incomplete %>/<%= stats.tests.total %>)</h4>
+            <h4>Incomplete (<%= stats.tests.incomplete %>/<%= stats.tests.total %>) <span onclick="javascript: toggleBySource('incomplete');" style="cursor: pointer;" title="Show / hide">&raquo;</span></h4>
             <div class="progress progress-warning">
                 <div class="bar" style="width: <%= stats.tests.percentIncomplete %>%"></div>
             </div>
 
-            <h4>Skipped (<%= stats.tests.skipped %>/<%= stats.tests.total %>)</h4>
+            <h4>Skipped (<%= stats.tests.skipped %>/<%= stats.tests.total %>) <span onclick="javascript: toggleBySource('skipped');" style="cursor: pointer;" title="Show / hide">&raquo;</span></h4>
             <div class="progress progress-info">
                 <div class="bar" style="width: <%= stats.tests.percentSkipped %>%"></div>
             </div>
 
-            <h4>Succeeded (<%= stats.tests.succeeded %>/<%= stats.tests.total %>)</h4>
+            <h4>Succeeded (<%= stats.tests.succeeded %>/<%= stats.tests.total %>) <span onclick="javascript: toggleBySource('succeeded');" style="cursor: pointer;" title="Show / hide">&raquo;</span></h4>
             <div class="progress progress-success">
                 <div class="bar" style="width: <%= stats.tests.percentSucceeded %>%"></div>
             </div>
@@ -306,6 +306,12 @@
     </script>
 
     <script>
+        function toggleBySource(source){
+            $('.alert-' + source).each(function(){
+                $(this).toggle();
+            });
+        }
+
       $(document).ready(function() {
 
         var runTests = function(event) {

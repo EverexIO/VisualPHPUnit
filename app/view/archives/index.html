@@ -123,6 +123,12 @@
     <script src='//ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js'></script>
     <script src='./js/jquery.sortElements.js'></script>
     <script>
+function toggleBySource(source){
+    $('.alert-' + source).each(function(){
+        $(this).toggle();
+    });
+}
+
       $(document).ready(function() {
 
         $('#view-snapshot').click(function(event) {
