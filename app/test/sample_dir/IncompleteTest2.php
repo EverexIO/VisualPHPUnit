@@ -6,7 +6,7 @@ class IncompleteTest2 extends PHPUnit_Framework_TestCase {
         $this->assertTrue(TRUE, 'This should already work.');
  
         // Stop here and mark this test as incomplete.
-        $this->markTestIncomplete('This test has not been implemented yet.');
+        self::markTestIncomplete('This test has not been implemented yet.');
     }
 
     public function test_something_else() {
