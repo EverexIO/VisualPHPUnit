@@ -197,6 +197,8 @@
                 "UPDATE `" . $table . "` " .
                 "SET " .
                     "`failed` = `failed` + {$data['failed']}, " .
+                    "`incomplete` = `incomplete` + {$data['incomplete']}, " .
+                    "`skipped` = `skipped` + {$data['skipped']}, " .
                     "`succeeded` = succeeded + {$data['succeeded']}, " .
                     "`id_details` = {$detailsId} " .
                     "WHERE `run_date` = '$now'"
