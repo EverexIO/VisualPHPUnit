@@ -120,10 +120,11 @@ class Graph extends \app\core\Controller {
                         }
                     }
                 }
+                $plot_values['total'][] = round(array_sum($data) / $num_rows, 2);
             } else {
+                $plot_values['total'][] = 0;
                 $plot_values['details'][] = 0;
             }
-            $plot_values['total'][] = array_sum($data);
 
             foreach ( $data as $key => $val ) {
                 if ( $num_rows > 0 ) {

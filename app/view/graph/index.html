@@ -176,14 +176,9 @@
                     "data": response.total
                   },
                   {
-                    "name": "Failed",
-                    "color": "#b94a48",
-                    "data": response.failed
-                  },
-                  {
-                    "name": "Incomplete",
-                    "color": "#f89406",
-                    "data": response.incomplete
+                    "name": "Succeeded",
+                    "color": "#468847",
+                    "data": response.succeeded
                   },
                   {
                     "name": "Skipped",
@@ -191,9 +186,14 @@
                     "data": response.skipped
                   },
                   {
-                    "name": "Succeeded",
-                    "color": "#468847",
-                    "data": response.succeeded
+                    "name": "Incomplete",
+                    "color": "#f89406",
+                    "data": response.incomplete
+                  },
+                  {
+                    "name": "Failed",
+                    "color": "#b94a48",
+                    "data": response.failed
                   }
               ],
                plotOptions: {
