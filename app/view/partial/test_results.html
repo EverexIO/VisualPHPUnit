@@ -10,22 +10,22 @@
                 <div class='span4'>
                     <h3>Suite Statistics</h3>
 
-                    <h4>Failed (<?=$stats['suites']['failed'];?>/<?=$stats['suites']['total'];?>)</h4>
+                    <h4 onclick="javascript: toggleBySource('failed');" style="cursor: pointer;" title="Show / hide">Failed (<?=$stats['suites']['failed'];?>/<?=$stats['suites']['total'];?>) <span id="toggle-failed">&raquo;&raquo;</span></h4>
                     <div class="progress progress-danger">
                       <div class="bar" style="width: <?=$stats['suites']['percentFailed'];?>%"></div>
                     </div>
 
-                    <h4>Incomplete (<?=$stats['suites']['incomplete'];?>/<?=$stats['suites']['total'];?>)</h4>
+                    <h4 onclick="javascript: toggleBySource('incomplete');" style="cursor: pointer;" title="Show / hide">Incomplete (<?=$stats['suites']['incomplete'];?>/<?=$stats['suites']['total'];?>) <span id="toggle-incomplete">&raquo;&raquo;</span></h4>
                     <div class="progress progress-warning">
                       <div class="bar" style="width: <?=$stats['suites']['percentIncomplete'];?>%"></div>
                     </div>
 
-                    <h4>Skipped (<?=$stats['suites']['skipped'];?>/<?=$stats['suites']['total'];?>)</h4>
+                    <h4 onclick="javascript: toggleBySource('skipped');" style="cursor: pointer;" title="Show / hide">Skipped (<?=$stats['suites']['skipped'];?>/<?=$stats['suites']['total'];?>) <span id="toggle-skipped">&raquo;&raquo;</span></h4>
                     <div class="progress progress-info">
                       <div class="bar" style="width: <?=$stats['suites']['percentSkipped'];?>%"></div>
                     </div>
 
-                    <h4>Succeeded (<?=$stats['suites']['succeeded'];?>/<?=$stats['suites']['total'];?>)</h4>
+                    <h4 onclick="javascript: toggleBySource('succeeded');" style="cursor: pointer;" title="Show / hide">Succeeded (<?=$stats['suites']['succeeded'];?>/<?=$stats['suites']['total'];?>) <span id="toggle-succeeded">&raquo;&raquo;</span></h4>
                     <div class="progress progress-success">
                       <div class="bar" style="width: <?=$stats['suites']['percentSucceeded'];?>%"></div>
                     </div>
@@ -78,7 +78,7 @@
                         <?php endif; ?>
                         <?php if ( $test['trace']): ?>
                         <li class='test-details'>
-                            <em style="cursor: pointer;" onclick="$(this).next().toggle();">Stack Trace &raquo;&raquo;</em>
+                            <em style="cursor: pointer; border-bottom: 1px dashed;" onclick="$(this).next().toggle();">Stack Trace &raquo;&raquo;</em>
                             <pre style="display: none;"><?=$test['trace'];?></pre>
                         </li>
                         <?php endif; ?>

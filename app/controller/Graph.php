@@ -76,6 +76,7 @@ class Graph extends \app\core\Controller {
 
         $categories = array();
         $plot_values = array(
+            'total'      => array(),
             'failed'     => array(),
             'incomplete' => array(),
             'skipped'    => array(),
@@ -90,7 +91,7 @@ class Graph extends \app\core\Controller {
                 'failed'     => 0,
                 'incomplete' => 0,
                 'skipped'    => 0,
-                'succeeded'  => 0
+                'succeeded'  => 0,
             );
 
             $sql =
@@ -122,6 +123,7 @@ class Graph extends \app\core\Controller {
             } else {
                 $plot_values['details'][] = 0;
             }
+            $plot_values['total'][] = array_sum($data);
 
             foreach ( $data as $key => $val ) {
                 if ( $num_rows > 0 ) {
@@ -140,6 +142,7 @@ class Graph extends \app\core\Controller {
             'type'       => $request->data['graph_type'],
             'timeFrame'  => $request->data['time_frame'],
             'categories' => $categories,
+            'total'      => $plot_values['total'],
             'failed'     => $plot_values['failed'],
             'succeeded'  => $plot_values['succeeded'],
             'skipped'    => $plot_values['skipped'],
