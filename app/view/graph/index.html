@@ -132,6 +132,33 @@
               return false;
             }
 
+            var aSeries = [];
+            aSeries.push({
+                name:  "Total",
+                color: "#000",
+                data:  response.total
+            });
+            aSeries.push({
+                name:  "Succeeded",
+                color: "#468847",
+                data:  response.succeeded
+            });
+            aSeries.push({
+                name:  "Skipped",
+                color: "#3a87ad",
+                data:  response.skipped
+            });
+            aSeries.push({
+                name:  "Incomplete",
+                color: "#3a87ad",
+                data:  response.incomplete
+            });
+            aSeries.push({
+                name:  "Failed",
+                color: "#b94a48",
+                data:  response.failed
+            });
+
             chart = {
               "chart": {
                 "renderTo": "graph",
@@ -169,7 +196,12 @@
                 "y": 100,
                 "borderWidth": 0
               },
-              "series": [
+            tooltip: {
+                shared: true,
+                crosshairs: true
+            },
+              "series": aSeries
+              /*[
                   {
                     "name": "Total",
                     "color": "#000",
@@ -195,7 +227,7 @@
                     "color": "#b94a48",
                     "data": response.failed
                   }
-              ],
+              ]*/,
                plotOptions: {
                     series: {
                         cursor: 'pointer',
