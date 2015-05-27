@@ -82,7 +82,7 @@ class MySQL {
             $this->_dbh->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
             return true;
         } catch ( PDOException $e ) {
-            $this->_errors[] = $e->getMessage();
+            $this->_errors[] = $e->getMessage() . "\n" . $e->getTraceAsString() . "\n";
             return false;
         }
     }
@@ -167,7 +167,7 @@ class MySQL {
         try {
             $statement->execute($data);
         } catch ( PDOException $e ) {
-            $this->_errors[] = $e->getMessage();
+            $this->_errors[] = $e->getMessage() . "\n" . $e->getTraceAsString() . "\n";
             return false;
         }
 
@@ -204,7 +204,7 @@ class MySQL {
         try {
             $statement->execute();
         } catch ( PDOException $e ) {
-            $this->_errors[] = $e->getMessage();
+            $this->_errors[] = $e->getMessage() . "\n" . $e->getTraceAsString() . "\n";
             return false;
         }
 
@@ -264,12 +264,13 @@ class MySQL {
                 $data["{$name}_where"] = $val;
             }
         }
+        $sql = rtrim($sql, ', ');
     	$statement = $this->_dbh->prepare($sql);
 
         try {
             $statement->execute($data);
         } catch ( PDOException $e ) {
-            $this->_errors[] = $e->getMessage();
+            $this->_errors[] = $e->getMessage() . "\n" . $e->getTraceAsString() . "\n";
             return false;
         }
 
@@ -307,7 +308,7 @@ class MySQL {
         try {
             $statement->execute($data);
         } catch ( PDOException $e ) {
-            $this->_errors[] = $e->getMessage();
+            $this->_errors[] = $e->getMessage() . "\n" . $e->getTraceAsString() . "\n";
             return false;
         }
 
