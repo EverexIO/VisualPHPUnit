@@ -82,6 +82,7 @@ class Graph extends \app\core\Controller {
             'skipped'    => array(),
             'succeeded'  => array(),
             'details'    => array(),
+            'real_total' => array(),
         );
         while ( $current < $end ) {
             $categories[] = date($output, $current);
@@ -96,7 +97,7 @@ class Graph extends \app\core\Controller {
 
             $sql =
             //    "SELECT `failed`, `incomplete`, `skipped`, `succeeded`, `details` " .
-                "SELECT `failed`, `incomplete`, `skipped`, `succeeded`, `id_details` " .
+                "SELECT `failed`, `incomplete`, `skipped`, `succeeded`, `id_details`, `real_total` " .
                 "FROM {$table} `t` " .
             //    "LEFT OUTER JOIN `details` `d` " .
             //    "ON `d`.`id` = `t`.`details` " .
@@ -113,24 +114,38 @@ class Graph extends \app\core\Controller {
             if ( $num_rows > 0 ) {
                 foreach ( $results as $notFirst => $result ) {
                     foreach ( $result as $key => $value ) {
-                        if ('id_details' != $key) {
-                            $data[$key] += $value;
-                        } elseif(!$notFirst) {
-                            $plot_values['details'][] = $value;
+                        switch($key){
+                            case 'id_details':
+                                if(!$notFirst){
+                                    $plot_values['details'][] = (int)$value;
+                                }
+                                break;
+                            case 'real_total':
+                                if(($notFirst + 1) == $num_rows){
+                                    $plot_values['real_total'][] = (int)$value;
+                                }
+                                break;
+                            default:
+                                $data[$key] += $value;
                         }
                     }
                 }
                 $plot_values['total'][] = round(array_sum($data) / $num_rows, 2);
+                $plot_values['total_whole'][] = array_sum($data);
             } else {
                 $plot_values['total'][] = 0;
+                $plot_values['total_whole'][] = 0;
                 $plot_values['details'][] = 0;
+                $plot_values['real_total'][] = 0;
             }
 
             foreach ( $data as $key => $val ) {
                 if ( $num_rows > 0 ) {
                     $plot_values[$key][] = round($val / $num_rows, 2);
+                    $plot_values[$key . '_whole'][] = $val;
                 } else {
                     $plot_values[$key][] = 0;
+                    $plot_values[$key . '_whole'][] = 0;
                 }
             }
 
@@ -149,6 +164,12 @@ class Graph extends \app\core\Controller {
             'skipped'    => $plot_values['skipped'],
             'incomplete' => $plot_values['incomplete'],
             'details'    => $plot_values['details'],
+            'real_total' => $plot_values['real_total'],
+            'total_whole'      => $plot_values['total_whole'],
+            'failed_whole'     => $plot_values['failed_whole'],
+            'succeeded_whole'  => $plot_values['succeeded_whole'],
+            'skipped_whole'    => $plot_values['skipped_whole'],
+            'incomplete_whole' => $plot_values['incomplete_whole'],
         );
     }
 
@@ -189,9 +210,9 @@ class Graph extends \app\core\Controller {
             $details = unserialize($details);
             // print_r($details);die;###
             $scope = array(
-                'type'     => ucfirst($type),
-                'run_date' => $res['run_date'],
-                'source'   => $source,
+                'type'       => ucfirst($type),
+                'run_date'   => $res['run_date'],
+                'source'     => $source,
             ) + $details;
         }
 
