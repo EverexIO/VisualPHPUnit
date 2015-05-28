@@ -163,6 +163,7 @@
         if($details['real_total_date'] == $now){
             $details['real_total'] += $t;
         }else{
+            $details['real_total_date'] == $now;
             $details['real_total'] = $t;
         }
 

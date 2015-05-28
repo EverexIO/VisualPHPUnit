@@ -2,8 +2,9 @@
 
 namespace app\controller;
 
-class Home extends \app\core\Controller {
+use PDO;
 
+class Home extends \app\core\Controller {
     protected function _create_snapshot($view_data) {
         $directory = \app\lib\Library::retrieve('snapshot_directory');
         $filename = realpath($directory). '/' . date('Y-m-d_H-i') . '.html';
@@ -129,22 +130,34 @@ class Home extends \app\core\Controller {
                 'message' => implode(' ', $db->get_errors())
             );
         }
-        $dbLink = @mysql_connect($db_options['host'], $db_options['username'], $db_options['password']);
-        mysql_select_db($db_options['database']);
 
         $time = time();
         $now = date('Y-m-d H:i:s', $time);
+        $date = date('Y-m-d', $time);
         foreach ( $stats as $key => $stat ) {
             $sql =
-                "SELECT `id`, `details` ".
+                "SELECT `id`, `details` " .
                 "FROM `details` " .
                 "WHERE " .
-                    "`run_date` = '" . date('Y-m-d') . "' AND " .
-                    "`type` = '" . $key . "'";
-            ($r = @mysql_query($sql)) or die(print_r(mysql_error(), TRUE));
-            if(mysql_num_rows($r)){
-                list($detailsId, $details) = mysql_fetch_row($r);
-                $details = unserialize($details);
+                    "`run_date` = ? AND " .
+                    "`type` = ?";
+            if(!$db->query(
+                $sql,
+                array(
+                    $date,
+                    $key
+                )
+            )){
+                die("SQL errors:\n" . implode(' ', $db->get_errors()) . "\n");
+            }
+            $res = $db->fetch(PDO::FETCH_ASSOC);
+
+            if($res){
+                $detailsId = $res['id'];
+                $details = unserialize($res['details']);
+                if(!isset($details['real_total_date'])){
+                    $details['real_total_date'] = $now;
+                }
             }else{
                 $detailsId = 0;
                 $details = array(
@@ -157,11 +170,24 @@ class Home extends \app\core\Controller {
                     'percentSkipped'    => 0,
                     'percentIncomplete' => 0,
                     'percentFailed'     => 0,
+                    'real_total_date'   => $now,
+                    'real_total'        => 0,
                     'data'              => array()
                 );
             }
             foreach($stat as $statKey => $value){
                 $details[$statKey] += $value;
+            }
+            $t =
+                $stat['succeeded'] +
+                $stat['skipped'] +
+                $stat['incomplete'] +
+                $stat['failed'];
+            if($details['real_total_date'] == $now){
+                $details['real_total'] += $t;
+            }else{
+                $details['real_total_date'] == $now;
+                $details['real_total'] = $t;
             }
             foreach($results['suites'] as $testName => $aTests){
                 foreach($aTests['tests'] as $aTest){
@@ -178,27 +204,27 @@ class Home extends \app\core\Controller {
                 }
             }
             if($detailsId){
-                $sql =
-                    "UPDATE `details` " .
-                    "SET `details` = '" .
-                    mysql_real_escape_string(
-                        serialize($details)
-                    ) . "' " .
-                    "WHERE `id` = {$detailsId}";
+                if(!$db->update(
+                    'details',
+                    array(
+                        'details' => serialize($details)
+                    ),
+                    array('id' => $detailsId)
+                )){
+                    die("SQL errors:\n" . implode(' ', $db->get_errors()) . "\n");
+                }
             }else{
-                $sql =
-                    "INSERT INTO `details` " .
-                    "SET " .
-                        "`run_date` = '" . date('Y-m-d') . "', " .
-                        "`type` = '{$key}', " .
-                        "`details` = '" .
-                        mysql_real_escape_string(
-                            serialize($details)
-                        ) . "'";
-            }
-            mysql_query($sql) or die(print_r(mysql_error(), TRUE));
-            if(!$detailsId){
-                $detailsId = mysql_insert_id();
+                if(!$db->insert(
+                    'details',
+                    array(
+                        'run_date' => date('Y-m-d'),
+                        'type'     => $key,
+                        'details'  => serialize($details)
+                    )
+                )){
+                    die("SQL errors:\n" . implode(' ', $db->get_errors()) . "\n");
+                }
+                $detailsId = $db->insert_id();
             }
 
             $data = array(
@@ -208,6 +234,7 @@ class Home extends \app\core\Controller {
                 'skipped'    => $stat['skipped'],
                 'succeeded'  => $stat['succeeded'],
                 'id_details' => $detailsId,
+                'real_total' => $details['real_total'],
             );
             $table = ucfirst(rtrim($key, 's')) . 'Result';
             if ( !$db->insert($table, $data) ) {
@@ -227,7 +254,4 @@ class Home extends \app\core\Controller {
         );
 
     }
-
 }
-
-?>
