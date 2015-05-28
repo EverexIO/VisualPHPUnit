@@ -132,6 +132,9 @@
         if($res){
             $detailsId = $res['id'];
             $details = unserialize($res['details']);
+            if(!isset($details['real_total_date'])){
+                $details['real_total_date'] = $now;
+            }
         }else{
             $detailsId = 0;
             $details = array(
