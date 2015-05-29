@@ -96,11 +96,11 @@ class Graph extends \app\core\Controller {
             );
 
             $sql =
-            //    "SELECT `failed`, `incomplete`, `skipped`, `succeeded`, `details` " .
-                "SELECT `failed`, `incomplete`, `skipped`, `succeeded`, `id_details`, `real_total` " .
+                "SELECT `failed`, `incomplete`, `skipped`, `succeeded`, `id_details`, `details` " .
+            //    "SELECT `failed`, `incomplete`, `skipped`, `succeeded`, `id_details`, `real_total` " .
                 "FROM {$table} `t` " .
-            //    "LEFT OUTER JOIN `details` `d` " .
-            //    "ON `d`.`id` = `t`.`details` " .
+                "LEFT OUTER JOIN `details` `d` " .
+                "ON `d`.`id` = `t`.`id_details` " .
                 "WHERE `t`.`run_date` >= ? AND `t`.`run_date` < ?";
             $params = array(
                 date($sql_format, $current),
@@ -120,9 +120,13 @@ class Graph extends \app\core\Controller {
                                     $plot_values['details'][] = (int)$value;
                                 }
                                 break;
-                            case 'real_total':
+                            case 'details':
                                 if(($notFirst + 1) == $num_rows){
-                                    $plot_values['real_total'][] = (int)$value;
+                                    $value = unserialize($value);
+                                    $plot_values['real_total'][] =
+                                        isset($value['real_total'])
+                                            ? (int)$value['real_total']
+                                            : 0;
                                 }
                                 break;
                             default:
