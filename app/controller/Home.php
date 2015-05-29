@@ -217,7 +217,7 @@ class Home extends \app\core\Controller {
                 if(!$db->insert(
                     'details',
                     array(
-                        'run_date' => date('Y-m-d'),
+                        'run_date' => $date,
                         'type'     => $key,
                         'details'  => serialize($details)
                     )
