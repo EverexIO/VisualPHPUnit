@@ -4,6 +4,7 @@ namespace app\lib;
 
 use \PDO;
 use \PDOException;
+use \PDOStatement;
 
 class MySQL {
 
@@ -211,6 +212,11 @@ class MySQL {
     	$this->_affected_rows = $statement->rowCount();
         $this->_statement = $statement;
     	return true;
+    }
+
+    public function getRowCount()
+    {
+        return $this->_statement->getRowCount;
     }
 
    /**

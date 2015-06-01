@@ -107,12 +107,12 @@ class Graph extends \app\core\Controller {
                 date($sql_format, $next)
             );
             $db->query($sql, $params);
+            $num_rows = $db->getRowCount();
+            if ($db->getRowCount() > 0) {
+                ### 1 {
 
-            $results = $db->fetch_all();
-            $num_rows = count($results);
-
-            if ( $num_rows > 0 ) {
-                foreach ( $results as $notFirst => $result ) {
+                $notFirst = FALSE;
+                while($result = $db->fetch(PDO::FETCH_ASSOC)){
                     foreach ( $result as $key => $value ) {
                         switch($key){
                             case 'id_details':
@@ -133,14 +133,23 @@ class Graph extends \app\core\Controller {
                                 $data[$key] += $value;
                         }
                     }
+                    $notFirst = TRUE;
                 }
                 $plot_values['total'][] = round(array_sum($data) / $num_rows, 2);
                 $plot_values['total_whole'][] = array_sum($data);
+
+                ### } 1
             } else {
+                ### 2 {
+
+                $results = $db->fetch_all();
+
                 $plot_values['total'][] = 0;
                 $plot_values['total_whole'][] = 0;
                 $plot_values['details'][] = 0;
                 $plot_values['real_total'][] = 0;
+
+                ### } 2
             }
 
             foreach ( $data as $key => $val ) {
