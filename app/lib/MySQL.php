@@ -216,7 +216,7 @@ class MySQL {
 
     public function getRowCount()
     {
-        return $this->_statement->getRowCount;
+        return $this->_statement->rowCount();
     }
 
    /**
