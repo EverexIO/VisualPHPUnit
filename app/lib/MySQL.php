@@ -214,11 +214,6 @@ class MySQL {
     	return true;
     }
 
-    public function getRowCount()
-    {
-        return $this->_statement->rowCount();
-    }
-
    /**
     *  Sets the fetch mode.
     *

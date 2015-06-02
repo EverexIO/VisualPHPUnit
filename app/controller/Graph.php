@@ -96,32 +96,45 @@ class Graph extends \app\core\Controller {
             );
 
             $sql =
-                "SELECT `failed`, `incomplete`, `skipped`, `succeeded`, `id_details`, `details` " .
-            //    "SELECT `failed`, `incomplete`, `skipped`, `succeeded`, `id_details`, `real_total` " .
-                "FROM {$table} `t` " .
-                "LEFT OUTER JOIN `details` `d` " .
-                "ON `d`.`id` = `t`.`id_details` " .
-                "WHERE `t`.`run_date` >= ? AND `t`.`run_date` < ?";
+                "SELECT COUNT(*) `num_rows` " .
+                "FROM {$table} " .
+                "WHERE `run_date` >= ? AND `run_date` < ?";
             $params = array(
                 date($sql_format, $current),
                 date($sql_format, $next)
             );
             $db->query($sql, $params);
-            $num_rows = $db->getRowCount();
-            if ($db->getRowCount() > 0) {
+            $row = $db->fetch(PDO::FETCH_ASSOC);
+            $num_rows = $row['num_rows'];
+
+            if ($num_rows > 0) {
                 ### 1 {
 
-                $notFirst = FALSE;
+                $sql =
+                    "SELECT `failed`, `incomplete`, `skipped`, `succeeded`, `id_details`, `details` " .
+                //    "SELECT `failed`, `incomplete`, `skipped`, `succeeded`, `id_details`, `real_total` " .
+                    "FROM {$table} `t` " .
+                    "LEFT OUTER JOIN `details` `d` " .
+                    "ON `d`.`id` = `t`.`id_details` " .
+                    "WHERE `t`.`run_date` >= ? AND `t`.`run_date` < ?";
+                $params = array(
+                    date($sql_format, $current),
+                    date($sql_format, $next)
+                );
+                $db->query($sql, $params);
+
+                $index = 0;
                 while($result = $db->fetch(PDO::FETCH_ASSOC)){
+                    // var_dump($result);###
                     foreach ( $result as $key => $value ) {
                         switch($key){
                             case 'id_details':
-                                if(!$notFirst){
+                                if(!$index){
                                     $plot_values['details'][] = (int)$value;
                                 }
                                 break;
                             case 'details':
-                                if(($notFirst + 1) == $num_rows){
+                                if(!$index){ // ($index + 1) == $num_rows
                                     $value = unserialize($value);
                                     $plot_values['real_total'][] =
                                         isset($value['real_total'])
@@ -133,16 +146,16 @@ class Graph extends \app\core\Controller {
                                 $data[$key] += $value;
                         }
                     }
-                    $notFirst = TRUE;
+                    ++$index;
                 }
                 $plot_values['total'][] = round(array_sum($data) / $num_rows, 2);
                 $plot_values['total_whole'][] = array_sum($data);
 
                 ### } 1
-            } else {
-                ### 2 {
 
-                $results = $db->fetch_all();
+            } else {
+
+                ### 2 {
 
                 $plot_values['total'][] = 0;
                 $plot_values['total_whole'][] = 0;
