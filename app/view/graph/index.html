@@ -246,17 +246,18 @@
                         point: {
                             events: {
                                 click: function (e) {
-                                    var source = this.series.name.toLowerCase();
+                                    var
+									    source = this.series.name.toLowerCase(),
+									    detailsId = response.details[
+										    response.categories.indexOf(this.category)
+                                        ];
 
-                                    // if('succeeded' != source){
+                                    if(detailsId){
                                         document.location.href =
-                                            '?details=' +
-                                            response.details[
-                                                response.categories.indexOf(this.category)
-                                            ] +
+                                            '?details=' + detailsId +
                                             '&type=' + response.type.toLowerCase() + 's' +
                                             '&source=' + source;
-                                    // }
+                                    }
                                 }
                             }
                         },
