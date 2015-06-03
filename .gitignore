@@ -1,4 +1,3 @@
 cache/
 vendor/
-composer.json
 composer.lock
