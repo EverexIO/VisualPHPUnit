@@ -103,9 +103,10 @@ class Graph extends \app\core\Controller {
                 date($sql_format, $current),
                 date($sql_format, $next)
             );
+            // file_put_contents('d:/q.log', date($sql_format, $next) . "\n", FILE_APPEND);###
             $db->query($sql, $params);
             $row = $db->fetch(PDO::FETCH_ASSOC);
-            $num_rows = $row['num_rows'];
+            $num_rows = (int)$row['num_rows'];
 
             if ($num_rows > 0) {
                 ### 1 {
@@ -117,6 +118,7 @@ class Graph extends \app\core\Controller {
                     "LEFT OUTER JOIN `details` `d` " .
                     "ON `d`.`id` = `t`.`id_details` " .
                     "WHERE `t`.`run_date` >= ? AND `t`.`run_date` < ?";
+
                 $params = array(
                     date($sql_format, $current),
                     date($sql_format, $next)
@@ -125,7 +127,6 @@ class Graph extends \app\core\Controller {
 
                 $index = 0;
                 while($result = $db->fetch(PDO::FETCH_ASSOC)){
-                    // var_dump($result);###
                     foreach ( $result as $key => $value ) {
                         switch($key){
                             case 'id_details':

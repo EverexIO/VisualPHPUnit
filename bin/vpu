@@ -213,7 +213,6 @@
             'skipped'    => $stat['skipped'],
             'succeeded'  => $stat['succeeded'],
             'id_details' => $detailsId,
-            'real_total' => $details['real_total']
         );
         if(!$db->insert($table, $data)){
             die(

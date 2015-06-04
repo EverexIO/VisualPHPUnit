@@ -234,7 +234,6 @@ class Home extends \app\core\Controller {
                 'skipped'    => $stat['skipped'],
                 'succeeded'  => $stat['succeeded'],
                 'id_details' => $detailsId,
-                'real_total' => $details['real_total'],
             );
             $table = ucfirst(rtrim($key, 's')) . 'Result';
             if ( !$db->insert($table, $data) ) {

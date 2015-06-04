@@ -101,7 +101,7 @@ class MySQL {
     public function fetch($fetch_style = null, $obj = null) {
         $this->_set_fetch_mode($fetch_style, $obj);
         $row = $this->_statement->fetch();
-        $this->_statement->closeCursor();
+        // $this->_statement->closeCursor();
         return $row;
     }
 
