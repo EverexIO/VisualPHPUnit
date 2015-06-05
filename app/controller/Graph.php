@@ -234,8 +234,8 @@ class Graph extends \app\core\Controller {
         // var_dump($res);die;###
 
         $scope = array(
-            'type'       => ucfirst($type),
-            'source'     => $source,
+            'type'   => ucfirst($type),
+            'source' => $source,
         );
         if('' != $dateTime){
             $scope['run_date'] = $dateTime;
@@ -264,12 +264,13 @@ class Graph extends \app\core\Controller {
                     }
                 }
             }
-            $scope += array('run_date' + $res['run_date']) + $stats + $details;
+            $scope += array('run_date' => $res['run_date']) + $stats + $details;
             $scope['percentSucceeded'] = $scope['succeeded'] * 100 / $scope['total'];
             $scope['percentSkipped'] = $scope['skipped'] * 100 / $scope['total'];
             $scope['percentIncomplete'] = $scope['incomplete'] * 100 / $scope['total'];
             $scope['percentFailed'] = $scope['failed'] * 100 / $scope['total'];
         }
+        $scope += array('run_date' + '???');
 
         $result = $this->render_html('graph/details', $scope);
 
