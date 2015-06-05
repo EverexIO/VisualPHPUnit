@@ -132,15 +132,10 @@
               }));
               return false;
             }
-            /*
-            var total = [];
-            for(var i in response.total){
-                total.push(response.total[i] + ' (' + response.total_whole[i] + ')');
-            }
-            */
 
-            var aSeries = [];
-            if('undefined' != typeof(response.real_total)){
+            var aSeries = [], notByRuns = 'undefined' != typeof(response.real_total);
+
+            if(notByRuns){
                 aSeries.push({
                     name:      "Last run " + response.type + "s",
                     color:     "#888",
@@ -191,9 +186,9 @@
               },
               "xAxis": {
                 categories: response.categories,
-                labels: {
+                labels: notByRuns ? {} : {
                     style: {
-                        fontSize: '10px'
+                        fontSize: '9px'
                     }
                 }
               },
