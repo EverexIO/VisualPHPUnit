@@ -296,9 +296,17 @@ class Graph extends \app\core\Controller {
         }
 
         $sql =
-            "SELECT `run_date`, `failed`, `incomplete`, `skipped`, `succeeded`, `id_details` " .
+            "SELECT " .
+                "`run_date`, " .
+                "SUM(`failed`) `failed`, " .
+                "SUM(`incomplete`) `incomplete`, " .
+                "SUM(`skipped`) `skipped`, " .
+                "SUM(`succeeded`) `succeeded`, " .
+                "`id_details` " .
             "FROM {$table} " .
-            "WHERE `run_date` >= ? AND `run_date` < ?";
+            "WHERE `run_date` >= ? AND `run_date` < ?" .
+            "GROUP BY `run_date` " .
+            "ORDER BY `run_date` ASC";
 
         $db->query($sql, $params);
 
