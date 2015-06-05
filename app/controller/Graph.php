@@ -309,6 +309,9 @@ class Graph extends \app\core\Controller {
                     case 'run_date':
                         $categories[] = $value;
                         break;
+                    case 'id_details':
+                        $plot_values['details'][] = (int)$value;
+                        break;
                     default:
                         $value = (int)$value;
                         $plot_values[$key][] = $value;
