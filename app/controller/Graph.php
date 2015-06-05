@@ -243,17 +243,32 @@ class Graph extends \app\core\Controller {
         if($res){
             $details = $res['details'];
             $details = unserialize($details);
+            $stats   = array();
             if('' != $dateTime){
                 // Filter results by date/time
+                $stats = array(
+                    'succeeded'  => 0,
+                    'skipped'    => 0,
+                    'incomplete' => 0,
+                    'failed'     => 0,
+                    'total'      => 0,
+                );
                 foreach(array_keys($details['data']) as $name){
                     foreach(array_keys($details['data'][$name]) as $index){
                         if($dateTime != $details['data'][$name][$index]['run_time']){
                             unset($details['data'][$name][$index]);
+                        }else{
+                            $stats['total']++;
+                            $stats[$details['data'][$name][$index]['status']]++;
                         }
                     }
                 }
             }
-            $scope += array('run_date' + $res['run_date']) + $details;
+            $scope += array('run_date' + $res['run_date']) + $stats + $details;
+            $scope['percentSucceeded'] = $scope['succeeded'] * 100 / $scope['total'];
+            $scope['percentSkipped'] = $scope['skipped'] * 100 / $scope['total'];
+            $scope['percentIncomplete'] = $scope['incomplete'] * 100 / $scope['total'];
+            $scope['percentFailed'] = $scope['failed'] * 100 / $scope['total'];
         }
 
         $result = $this->render_html('graph/details', $scope);
