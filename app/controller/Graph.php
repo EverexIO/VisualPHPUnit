@@ -263,6 +263,7 @@ class Graph extends \app\core\Controller {
                         }
                     }
                 }
+                $stats['real_total'] = $stats['total'];
             }
             $scope += array('run_date' => $res['run_date']) + $stats + $details;
             $scope['percentSucceeded'] = $scope['succeeded'] * 100 / $scope['total'];
