@@ -61,8 +61,9 @@
                 </select>
               </li>
               <li>
-                <label for='time-frame'>Time Frame</label>
+                <label for='time-frame'>Frame</label>
                 <select id='time-frame'>
+                  <option value='ByRuns'>By runs</option>
                   <option value='Daily'>Daily</option>
                   <option value='Weekly'>Weekly</option>
                   <option value='Monthly'>Monthly</option>
@@ -123,7 +124,7 @@
             var chart;
 
             response = $.parseJSON(response);
-            // console.log(response);///
+            console.log(response);///
 
             if ( response.error ) {
               $('#graph').html(_.template($('#error').html(), {
@@ -139,12 +140,14 @@
             */
 
             var aSeries = [];
-            aSeries.push({
-                name:      "Last run " + response.type + "s",
-                color:     "#888",
-                data:      response.real_total,
-                dashStyle: 'longdash'
-            });
+            if('undefined' != typeof(response.real_total)){
+                aSeries.push({
+                    name:      "Last run " + response.type + "s",
+                    color:     "#888",
+                    data:      response.real_total,
+                    dashStyle: 'longdash'
+                });
+            }
             aSeries.push({
                 name:  "Total",
                 color: "#000",
@@ -176,7 +179,7 @@
                 "renderTo": "graph",
                 "defaultSeriesType": "line",
                 "marginRight": 130,
-                "marginBottom": 25
+                "marginBottom": 50
               },
               "title": {
                 "text": response.type + " Results",
@@ -187,7 +190,7 @@
                 "x": -20
               },
               "xAxis": {
-                "categories": response.categories
+                categories: response.categories
               },
               "yAxis": {
                 "title": {
@@ -212,34 +215,7 @@
                 shared: true,
                 crosshairs: true
             },
-              "series": aSeries
-              /*[
-                  {
-                    "name": "Total",
-                    "color": "#000",
-                    "data": response.total
-                  },
-                  {
-                    "name": "Succeeded",
-                    "color": "#468847",
-                    "data": response.succeeded
-                  },
-                  {
-                    "name": "Skipped",
-                    "color": "#3a87ad",
-                    "data": response.skipped
-                  },
-                  {
-                    "name": "Incomplete",
-                    "color": "#f89406",
-                    "data": response.incomplete
-                  },
-                  {
-                    "name": "Failed",
-                    "color": "#b94a48",
-                    "data": response.failed
-                  }
-              ]*/,
+              "series": aSeries,
                plotOptions: {
                     series: {
                         cursor: 'pointer',

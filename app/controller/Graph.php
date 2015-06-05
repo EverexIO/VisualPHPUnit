@@ -65,7 +65,7 @@ class Graph extends \app\core\Controller {
                 $sql_format = 'Y-m-d';
                 $output = 'm/d';
                 break;
-            default:
+            default: // Daily
                 $interval = 86400;
                 $sql_format = 'Y-m-d';
                 $output = 'm/d';
@@ -73,6 +73,9 @@ class Graph extends \app\core\Controller {
         }
         $current = $start = strtotime($request->data['start_date']);
         $end = strtotime($request->data['end_date']) + $interval;
+        if('ByRuns' == $request->data['time_frame']){
+            return $this->getByRuns($request, $db, $table, $start, $end);
+        }
 
         $categories = array();
         $plot_values = array(
@@ -244,6 +247,84 @@ class Graph extends \app\core\Controller {
         }
 
         $result = $this->render_html('graph/details', $scope);
+
+        return $result;
+    }
+
+    /**
+     * Returns graph data by runs.
+     *
+     * @param  object $request
+     * @param  MySQL  $db
+     * @param  string $table
+     * @param  int    $start    Timestamp
+     * @param  int    $end      Timestamp
+     * @return array
+     */
+    protected function getByRuns($request, $db, $table, $start, $end){
+        $categories = array();
+        $plot_values = array(
+            'total'            => array(),
+            'total_whole'      => array(),
+            'failed_whole'     => array(),
+            'incomplete_whole' => array(),
+            'skipped_whole'    => array(),
+            'succeeded_whole'  => array(),
+            'details'          => array(),
+        );
+        $sql =
+            "SELECT COUNT(*) `num_rows` " .
+            "FROM {$table} " .
+            "WHERE `run_date` >= ? AND `run_date` < ?";
+        $sql_format = 'Y-m-d';
+        $params = array(
+            date($sql_format, $start),
+            date($sql_format, $end),
+        );
+        $db->query($sql, $params);
+        $row = $db->fetch(PDO::FETCH_ASSOC);
+        $num_rows = (int)$row['num_rows'];
+
+        if ($num_rows < 1) {
+            $result = array(
+                'type'       => $request->data['graph_type'],
+                'timeFrame'  => $request->data['time_frame'],
+                'categories' => $categories,
+            ) + $plot_values;
+
+            return $result;
+        }
+
+        $sql =
+            "SELECT `run_date`, `failed`, `incomplete`, `skipped`, `succeeded`, `id_details` " .
+            "FROM {$table} " .
+            "WHERE `run_date` >= ? AND `run_date` < ?";
+
+        $db->query($sql, $params);
+
+        while($result = $db->fetch(PDO::FETCH_ASSOC)){
+            $total = 0;
+            foreach ( $result as $key => $value ) {
+                switch($key){
+                    case 'run_date':
+                        $categories[] = $value;
+                        break;
+                    default:
+                        $value = (int)$value;
+                        $plot_values[$key][] = $value;
+                        $plot_values[$key . '_whole'][] = $value;
+                        $total += $value;
+                }
+            }
+            $plot_values['total'][] = $total;
+            $plot_values['total_whole'][] = $total;
+        }
+
+        $result = array(
+            'type'       => $request->data['graph_type'],
+            'timeFrame'  => $request->data['time_frame'],
+            'categories' => $categories,
+        ) + $plot_values;
 
         return $result;
     }
