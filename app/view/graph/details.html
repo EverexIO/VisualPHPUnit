@@ -63,22 +63,22 @@ if(isset($real_total)){
 
         <div class='row statistics'>
             <div class='span4'>
-                <h4 onclick="javascript: toggleBySource('failed');" style="cursor: pointer;" title="Show / hide">Failed (<?=$failed;?>/<?=$total;?>) <span id="toggle-failed">&raquo;&raquo;</span></h4>
+                <h4 onclick="javascript: toggleBySource('failed');" style="cursor: pointer;" title="Show / hide" id="hdr-failed">Failed (<?=$failed;?>/<?=$total;?>) <span id="toggle-failed">&raquo;&raquo;</span></h4>
                 <div class="progress progress-danger">
                   <div class="bar" style="width: <?=$percentFailed;?>%"></div>
                 </div>
 
-                <h4 onclick="javascript: toggleBySource('incomplete');" style="cursor: pointer;" title="Show / hide">Incomplete (<?=$incomplete;?>/<?=$total;?>) <span id="toggle-incomplete">&raquo;&raquo;</span></h4>
+                <h4 onclick="javascript: toggleBySource('incomplete');" style="cursor: pointer;" title="Show / hide" id="hdr-incomplete">Incomplete (<?=$incomplete;?>/<?=$total;?>) <span id="toggle-incomplete">&raquo;&raquo;</span></h4>
                 <div class="progress progress-warning">
                   <div class="bar" style="width: <?=$percentIncomplete;?>%"></div>
                 </div>
 
-                <h4 onclick="javascript: toggleBySource('skipped');" style="cursor: pointer;" title="Show / hide">Skipped (<?=$skipped;?>/<?=$total;?>) <span id="toggle-skipped">&raquo;&raquo;</span></h4>
+                <h4 onclick="javascript: toggleBySource('skipped');" style="cursor: pointer;" title="Show / hide" id="hdr-skipped">Skipped (<?=$skipped;?>/<?=$total;?>) <span id="toggle-skipped">&raquo;&raquo;</span></h4>
                 <div class="progress progress-info">
                   <div class="bar" style="width: <?=$percentSkipped;?>%"></div>
                 </div>
 
-                <h4 onclick="javascript: toggleBySource('succeeded');" style="cursor: pointer;" title="Show / hide">Succeeded (<?=$succeeded;?>/<?=$total;?>) <span id="toggle-succeeded">&raquo;&raquo;</span></h4>
+                <h4 onclick="javascript: toggleBySource('succeeded');" style="cursor: pointer;" title="Show / hide" id="hdr-succeeded">Succeeded (<?=$succeeded;?>/<?=$total;?>) <span id="toggle-succeeded">&raquo;&raquo;</span></h4>
                 <div class="progress progress-success">
                   <div class="bar" style="width: <?=$percentSucceeded;?>%"></div>
                 </div>
@@ -136,9 +136,9 @@ function toggleBySource(source){
     $('.alert-' + source).each(function(){
         $(this).toggle();
     });
-    $('#toggle-' + source).html(
-        '««' == $('#toggle-' + source).html() ? '»»' : '««'
-    );
+    var wasClosed = '««' == $('#toggle-' + source).html()
+    $('#toggle-' + source).html(wasClosed ? '»»' : '««');
+    $('#hdr-' + source).css('opacity', wasClosed ? 1 : 0.5);
 }
 var sources = ['failed', 'skipped', 'incomplete', 'succeeded'];
 for(var i = 0, q = sources.length; i < q; i++){
