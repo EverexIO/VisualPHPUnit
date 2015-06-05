@@ -14,11 +14,7 @@ class Graph extends \app\core\Controller {
                 !empty($request->query['details']) &&
                 !empty($request->query['type'])
             ) {
-                return $this->renderDetails(
-                    (int)$request->query['details'],
-                    $request->query['type'],
-                    $request->query['source']
-                );
+                return $this->renderDetails($request);
             }
 
             return array(
@@ -206,12 +202,14 @@ class Graph extends \app\core\Controller {
     /**
      * Renders details page.
      *
-     * @param  int    $detailsId
-     * @param  string $type
+     * @param  object $request
      * @return string
      */
-    protected function renderDetails($detailsId, $type, $source){
-        $scope = array();
+    protected function renderDetails($request){
+        $detailsId = (int)$request->query['details'];
+        $type = $request->query['type'];
+        $source = $request->query['source'];
+        $dateTime = isset($request->query['dt']) ? $request->query['dt'] : '';
 
         $dbOptions = \app\lib\Library::retrieve('db');
         /**
@@ -235,15 +233,27 @@ class Graph extends \app\core\Controller {
         $res = $db->fetch(PDO::FETCH_ASSOC);
         // var_dump($res);die;###
 
+        $scope = array(
+            'type'       => ucfirst($type),
+            'source'     => $source,
+        );
+        if('' != $dateTime){
+            $scope['run_date'] = $dateTime;
+        }
         if($res){
             $details = $res['details'];
             $details = unserialize($details);
-            // print_r($details);die;###
-            $scope = array(
-                'type'       => ucfirst($type),
-                'run_date'   => $res['run_date'],
-                'source'     => $source,
-            ) + $details;
+            if('' != $dateTime){
+                // Filter results by date/time
+                foreach(array_keys($details['data']) as $name){
+                    foreach(array_keys($details['data'][$name]) as $index){
+                        if($dateTime != $details['data'][$name][$index]['run_time']){
+                            unset($details['data'][$name][$index]);
+                        }
+                    }
+                }
+            }
+            $scope += array('run_date' + $res['run_date']) + $details;
         }
 
         $result = $this->render_html('graph/details', $scope);

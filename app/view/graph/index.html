@@ -226,13 +226,18 @@
 									    source = this.series.name.toLowerCase(),
 									    detailsId = response.details[
 										    response.categories.indexOf(this.category)
-                                        ];
+                                        ],
+                                        tail =
+                                            'ByRuns' == top.$('#time-frame').val()
+                                                ? '&dt=' + this.category
+                                                : '';
 
                                     if(detailsId){
                                         document.location.href =
                                             '?details=' + detailsId +
                                             '&type=' + response.type.toLowerCase() + 's' +
-                                            '&source=' + source;
+                                            '&source=' + source +
+                                            tail;
                                     }
                                 }
                             }
