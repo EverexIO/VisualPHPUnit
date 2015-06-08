@@ -173,8 +173,8 @@
               "chart": {
                 "renderTo": "graph",
                 "defaultSeriesType": "line",
-                "marginRight": 130,
-                "marginBottom": 50
+                "marginRight": 130/*,
+                "marginBottom": 50*/
               },
               "title": {
                 "text": response.type + " Results",
@@ -187,8 +187,11 @@
               "xAxis": {
                 categories: response.categories,
                 labels: notByRuns ? {} : {
+                    rotation: -90,
+                    x: 4,
+                    y: 58,
                     style: {
-                        fontSize: '9px'
+                        fontSize: '10px'
                     }
                 }
               },
