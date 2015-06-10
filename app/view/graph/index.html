@@ -135,6 +135,28 @@
 
             var aSeries = [], notByRuns = 'undefined' != typeof(response.real_total);
 
+            /*
+            /// logarithmic hack
+            var vars = [
+                'real_total',
+                'total_whole',
+                'succeeded_whole',
+                'skipped_whole',
+                'incomplete_whole',
+                'failed_whole'
+            ];
+            for(var i = 0; i < vars.length; i++){
+                var v = vars[i];
+                // console.log(v, response[v]);///
+                if('undefined' != typeof(response[v])){
+                    console.log(v, response[v].length);///
+                    for(var j = 0; j < response[v].length; j++){
+                        response[v][j]++;
+                    }
+                }
+            }
+            */
+
             if(notByRuns){
                 aSeries.push({
                     name:      "Last run " + response.type + "s",
@@ -181,7 +203,7 @@
                 "x": -20
               },
               "subtitle": {
-                "text": response.timeFrame + " Average",
+                "text": response.timeFrame + " total", // " Average",
                 "x": -20
               },
               "xAxis": {
@@ -204,7 +226,8 @@
                   "width": 1,
                   "color": "#808080"
                 }],
-                "min": 0
+                "min": 0/*,
+                type: 'logarithmic'*/
               },
               "legend": {
                 "layout": "vertical",
