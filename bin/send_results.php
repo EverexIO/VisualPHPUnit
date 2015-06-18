@@ -32,7 +32,7 @@ if($email){
     }
 
     $sql =
-        "SELECT * " .
+        "SELECT `failed`, `incomplete`, `skipped`, `succeeded` " .
         "FROM `TestResult` " .
         "WHERE`run_date` = ? " .
         "LIMIT 1";
@@ -45,6 +45,7 @@ if($email){
     $res = $db->fetch(PDO::FETCH_ASSOC);
 
     if($res){
+        $res['total'] = array_sum($res);
         $ok = $res['succeeded'] == $res['total'];
 
         $res +=
