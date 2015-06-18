@@ -4,6 +4,14 @@ require dirname(__FILE__) . '/../app/config/bootstrap.php';
 
 use \app\lib\PDO_MySQL;
 
+$opts  = array(
+    'f:'  => 'xml_configuration_file:',
+    'd::' => 'snapshot_directory::',
+    'e::' => 'sandbox_errors::',
+    's::' => 'store_statistics::',
+    't::' => 'time::',
+    'p::' => 'project::'
+);
 $options = getopt(implode(array_keys($opts)), array_values($opts));
 $time = time();
 if(isset($options['t'])){
