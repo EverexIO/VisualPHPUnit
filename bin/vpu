@@ -102,7 +102,7 @@
     if($email){
         $ok = $stats['tests']['succeeded'] == $stats['tests']['total'];
         mail(
-            ,
+            $email,
             sprintf(
                 "[ UNIT TESTS from %s ] %s",
                 getenv('NODE_ENV'),
