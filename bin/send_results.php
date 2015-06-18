@@ -32,7 +32,11 @@ if($email){
     }
 
     $sql =
-        "SELECT `failed`, `incomplete`, `skipped`, `succeeded` " .
+        "SELECT " .
+            "SUM(`failed`) `failed`, " .
+            "SUM(`incomplete`) `incomplete`, " .
+            "SUM(`skipped`) `skipped`, " .
+            "SUM(`succeeded`) `succeeded` " .
         "FROM `TestResult` " .
         "WHERE`run_date` = ? " .
         "LIMIT 1";
