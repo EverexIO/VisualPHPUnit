@@ -109,10 +109,10 @@
                 $ok ? "OK" : "PROBLEMS"
             ),
             sprintf(
-                "Succeeded: %d / %d (%.2f %)\n" .
-                "Skipped: %d / %d (%.2f %)\n" .
-                "Incomplete: %d / %d (%.2f %)\n" .
-                "Failed: %d / %d (%.2f %)\n",
+                "Succeeded: %d / %d (%.2f %%)\n" .
+                "Skipped: %d / %d (%.2f %%)\n" .
+                "Incomplete: %d / %d (%.2f %%)\n" .
+                "Failed: %d / %d (%.2f %%)\n",
                 $stats['tests']['succeeded'], $stats['tests']['total'], $stats['tests']['percentSucceeded'],
                 $stats['tests']['skipped'], $stats['tests']['total'], $stats['tests']['percentSkipped'],
                 $stats['tests']['incomplete'], $stats['tests']['total'], $stats['tests']['percentIncomplete'],
