@@ -38,10 +38,7 @@ if($email){
         "LIMIT 1";
     if(!$db->query(
         $sql,
-        array(
-            $date,
-            $key
-        )
+        array($now)
     )){
         die("SQL errors:\n" . implode(' ', $db->get_errors()) . "\n");
     }
