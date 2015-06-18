@@ -1,6 +1,6 @@
 #!/usr/bin/env php
 <?php
-require dirname(__FILE__) . '/app/config/bootstrap.php';
+require dirname(__FILE__) . '/../app/config/bootstrap.php';
 
 use \app\lib\PDO_MySQL;
 
