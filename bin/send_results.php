@@ -76,12 +76,12 @@ if($email){
             ),
             sprintf(
                 "Succeeded: %d / %d (%.2f %%)\n" .
-                "Skipped: %d / %d (%.2f %%)\n" .
                 "Incomplete: %d / %d (%.2f %%)\n" .
+                "Skipped: %d / %d (%.2f %%)\n" .
                 "Failed: %d / %d (%.2f %%)\n",
                 $res['succeeded'], $res['total'], $res['percentSucceeded'],
-                $res['skipped'], $res['total'], $res['percentSkipped'],
                 $res['incomplete'], $res['total'], $res['percentIncomplete'],
+                $res['skipped'], $res['total'], $res['percentSkipped'],
                 $res['failed'], $res['total'], $res['percentFailed']
             )
         );
