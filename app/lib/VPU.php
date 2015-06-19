@@ -492,7 +492,8 @@ class VPU {
         ini_set('html_errors', 0);
 
         ob_start();
-        $command->run(array('--configuration', $xml_config, '--stderr', '--process-isolation'), false);
+        // $command->run(array('--configuration', $xml_config, '--stderr', '--process-isolation'), false);
+        $command->run(array('--configuration', $xml_config, '--stderr'), false);
         $results = ob_get_contents();
         ob_end_clean();
 
