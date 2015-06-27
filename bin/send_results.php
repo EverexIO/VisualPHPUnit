@@ -55,7 +55,7 @@ if($email){
         $nodeEnv = getenv('NODE_ENV');
         $aNodeEnvXLink = \app\lib\Library::retrieve('node_env_x_link');
         $link =
-            '\\' . $aNodeEnvXLink[$nodeEnv] .
+            'http://' . $aNodeEnvXLink[$nodeEnv] .
             '/graphs?details=' . $detailsId .
             '&type=tests&source=succeeded&dt=' . rawurlencode($now);
         $res['total'] = array_sum($res);
