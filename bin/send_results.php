@@ -36,7 +36,8 @@ if($email){
             "SUM(`failed`) `failed`, " .
             "SUM(`incomplete`) `incomplete`, " .
             "SUM(`skipped`) `skipped`, " .
-            "SUM(`succeeded`) `succeeded` " .
+            "SUM(`succeeded`) `succeeded`, " .
+            "`id_details` " .
         "FROM `TestResult` " .
         "WHERE`run_date` = ? " .
         "LIMIT 1";
@@ -49,6 +50,14 @@ if($email){
     $res = $db->fetch(PDO::FETCH_ASSOC);
 
     if($res){
+        $detailsId = $res['id_details'];
+        unset($res['id_details']);
+        $nodeEnv = getenv('NODE_ENV');
+        $aNodeEnvXLink = \app\lib\Library::retrieve('node_env_x_link');
+        $link =
+            '\\' . $aNodeEnvXLink[$nodeEnv] .
+            '/graphs?details=' . $detailsId .
+            '&type=tests&source=succeeded&dt=' . rawurlencode($now);
         $res['total'] = array_sum($res);
         $ok = $res['succeeded'] == $res['total'];
 
@@ -66,23 +75,24 @@ if($email){
                     'percentFailed'     => 0,
                 );
 
-
         mail(
             $email,
             sprintf(
                 "[ UNIT TESTS from %s ] %s",
-                getenv('NODE_ENV'),
+                $nodeEnv,
                 $ok ? "OK" : "PROBLEMS"
             ),
             sprintf(
                 "Succeeded: %d / %d (%.2f %%)\n" .
                 "Incomplete: %d / %d (%.2f %%)\n" .
                 "Skipped: %d / %d (%.2f %%)\n" .
-                "Failed: %d / %d (%.2f %%)\n",
+                "Failed: %d / %d (%.2f %%)\n\n" .
+                "<a href=\"%s\">Details</a>\n",
                 $res['succeeded'], $res['total'], $res['percentSucceeded'],
                 $res['incomplete'], $res['total'], $res['percentIncomplete'],
                 $res['skipped'], $res['total'], $res['percentSkipped'],
-                $res['failed'], $res['total'], $res['percentFailed']
+                $res['failed'], $res['total'], $res['percentFailed'],
+                $link
             )
         );
 
