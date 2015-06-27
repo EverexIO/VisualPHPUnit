@@ -87,7 +87,7 @@ if($email){
                 "Incomplete: %d / %d (%.2f %%)\n" .
                 "Skipped: %d / %d (%.2f %%)\n" .
                 "Failed: %d / %d (%.2f %%)\n\n" .
-                "<a href=\"%s\">Details</a>\n",
+                "Details: %s\n",
                 $res['succeeded'], $res['total'], $res['percentSucceeded'],
                 $res['incomplete'], $res['total'], $res['percentIncomplete'],
                 $res['skipped'], $res['total'], $res['percentSkipped'],
