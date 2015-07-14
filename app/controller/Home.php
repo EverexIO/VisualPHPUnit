@@ -35,7 +35,7 @@ class Home extends \app\core\Controller {
     // GET
     public function help($request) {
         return array(
-            'munin_link' => \app\lib\Library::retrieve('munin_link')
+            'external_link' => \app\lib\Library::retrieve('external_link')
         );
     }
 
@@ -57,7 +57,7 @@ class Home extends \app\core\Controller {
             $xml_configuration_files = \app\lib\Library::retrieve(
                 'xml_configuration_files'
             );
-            $munin_link = \app\lib\Library::retrieve('munin_link');
+            $external_link = \app\lib\Library::retrieve('external_link');
             return compact(
                 'create_snapshots',
                 'sandbox_errors',
@@ -66,7 +66,7 @@ class Home extends \app\core\Controller {
                 'suites',
                 'test_directories',
                 'xml_configuration_files',
-                'munin_link'
+                'external_link'
             );
         }
 

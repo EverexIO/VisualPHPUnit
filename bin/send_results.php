@@ -57,7 +57,7 @@ if($email){
         $link =
             'http://' . $aNodeEnvXLink[$nodeEnv] .
             '/graphs?details=' . $detailsId .
-            '&type=tests&source=succeeded&dt=' . rawurlencode($now);
+            '&type=tests&dt=' . rawurlencode($now);
         $res['total'] = array_sum($res);
         $ok = $res['succeeded'] == $res['total'];
 

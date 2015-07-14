@@ -18,7 +18,7 @@ class Graph extends \app\core\Controller {
             }
 
             return array(
-                'munin_link' => \app\lib\Library::retrieve('munin_link')
+                'external_link' => \app\lib\Library::retrieve('external_link')
             );
         }
 
@@ -208,7 +208,7 @@ class Graph extends \app\core\Controller {
     protected function renderDetails($request){
         $detailsId = (int)$request->query['details'];
         $type = $request->query['type'];
-        $source = $request->query['source'];
+        $source = isset($request->query['source']) ? $request->query['source'] : '';
         $dateTime = isset($request->query['dt']) ? $request->query['dt'] : '';
 
         $dbOptions = \app\lib\Library::retrieve('db');
